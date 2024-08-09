@@ -16,6 +16,7 @@ You have to write an Java/Python/JS/Typescript console application to answer the
 Earliest time all the tasks will be completed?
 Latest time all tasks will be completed?
 
+Question 2:
 
 Both Alice & Bob have friends. Create a Java/Python/JS/Typescript console application to find all the friends of Alice and all the friends of Bob & common friends of Alice and Bob.
 Your algorithm should be able to do the following:
