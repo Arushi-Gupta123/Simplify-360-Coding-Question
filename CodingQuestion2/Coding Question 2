@@ -1,0 +1,103 @@
+import java.util.*;
+
+public class FriendNetwork {
+
+    private static final Map<String, Set<String>> friendsMap = new HashMap<>();
+
+    public static void main(String[] args) {
+        // Setup the initial friendship network
+        setupNetwork();
+
+        Scanner scanner = new Scanner(System.in);
+
+        // Find common friends
+        System.out.println("Enter the first person to find common friends:");
+        String person1 = scanner.nextLine();
+
+        System.out.println("Enter the second person to find common friends:");
+        String person2 = scanner.nextLine();
+
+        Set<String> commonFriends = findCommonFriends(person1, person2);
+        System.out.println("Common friends of " + person1 + " and " + person2 + ": " + commonFriends);
+
+        // Find nth connection
+        System.out.println("Enter the first person to find nth connection:");
+        String startPerson = scanner.nextLine();
+
+        System.out.println("Enter the second person to find nth connection:");
+        String targetPerson = scanner.nextLine();
+
+        int nthConnection = findNthConnection(startPerson, targetPerson);
+        System.out.println("The nth connection between " + startPerson + " and " + targetPerson + " is: " + nthConnection);
+
+        scanner.close();
+    }
+
+    // Initialize the network with sample data
+    private static void setupNetwork() {
+        addFriendship("Alice", "Bob");
+        addFriendship("Bob", "Janice");
+        addFriendship("Janice", "Emma");
+        addFriendship("Alice", "Charlie");
+        addFriendship("Charlie", "David");
+    }
+
+    // Add friendship between two people
+    private static void addFriendship(String person1, String person2) {
+        friendsMap.computeIfAbsent(person1, k -> new HashSet<>()).add(person2);
+        friendsMap.computeIfAbsent(person2, k -> new HashSet<>()).add(person1);
+    }
+
+    // Find common friends between person1 and person2
+    private static Set<String> findCommonFriends(String person1, String person2) {
+        Set<String> friends1 = friendsMap.getOrDefault(person1, new HashSet<>());
+        Set<String> friends2 = friendsMap.getOrDefault(person2, new HashSet<>());
+        friends1.retainAll(friends2);
+        return friends1;
+    }
+
+    // Find the nth connection (shortest path length) between start and target using BFS
+    private static int findNthConnection(String start, String target) {
+        if (start.equals(target)) {
+            return 0; // Directly connected to itself
+        }
+
+        Queue<String> queue = new LinkedList<>();
+        Map<String, Integer> distances = new HashMap<>();
+
+        queue.add(start);
+        distances.put(start, 0);
+
+        while (!queue.isEmpty()) {
+            String current = queue.poll();
+            int currentDistance = distances.get(current);
+
+            for (String friend : friendsMap.getOrDefault(current, new HashSet<>())) {
+                if (!distances.containsKey(friend)) {
+                    distances.put(friend, currentDistance + 1);
+                    if (friend.equals(target)) {
+                        return distances.get(friend);
+                    }
+                    queue.add(friend);
+                }
+            }
+        }
+
+        return -1; // No connection found
+    }
+}
+
+
+
+--------Time and Space Complexity------------------------------------------------------------
+
+1. Finding Common Friends
+Method: findCommonFriends
+Time Complexity: O(F1 + F2), where F1 and F2 are the number of friends of person1 and person2, respectively. This is because finding common elements in two sets involves iterating through both sets.
+Space Complexity: O(min(F1, F2)) for storing common friends.
+
+2. Finding nth Connection
+Method: findNthConnection
+Algorithm: Breadth-First Search (BFS) to find the shortest path in an unweighted graph.
+Time Complexity: O(V + E), where V is the number of vertices (people) and E is the number of edges (friendships). BFS traverses each vertex and edge once.
+Space Complexity: O(V) for the queue and the distances map.
